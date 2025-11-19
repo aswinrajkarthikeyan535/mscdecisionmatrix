@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Aswin's MSc Decision Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f172a, #1d3557);
+      --accent: #4f46e5;
+      --accent-soft: rgba(79, 70, 229, 0.15);
+      --accent-strong: #22c55e;
+      --card-bg: #0b1120;
+      --card-border: rgba(148, 163, 184, 0.3);
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --danger: #ef4444;
+      --warning: #f97316;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* LOGIN */
+    #login-screen {
+      max-width: 420px;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.95);
+      border-radius: 18px;
+      padding: 28px 26px 26px;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+    }
+
+    .login-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .login-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      background: rgba(15, 118, 110, 0.2);
+      color: #a5f3fc;
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      margin-top: 8px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 9px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.85);
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.5);
+      background: #020617;
+    }
+
+    .btn {
+      cursor: pointer;
+      width: 100%;
+      margin-top: 14px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      background: radial-gradient(circle at top left, #4f46e5, #1d4ed8);
+      color: white;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.9);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: transform 0.12s ease-out, box-shadow 0.12s ease-out,
+        filter 0.12s ease-out;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 1);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.9);
+    }
+
+    .login-error {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: var(--danger);
+      min-height: 18px;
+    }
+
+    .login-note {
+      margin-top: 10px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* DASHBOARD */
+    #dashboard {
+      max-width: 1200px;
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      gap: 18px;
+      background: rgba(15, 23, 42, 0.98);
+      border-radius: 20px;
+      padding: 18px 18px 22px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.9);
+    }
+
+    .dash-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.8);
+      padding-bottom: 10px;
+    }
+
+    .dash-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .dash-title span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .user-chip {
+      font-size: 0.8rem;
+      padding: 6px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .user-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.85);
+    }
+
+    .summary-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      border: 1px solid var(--card-border);
+      padding: 10px 11px 11px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top left, rgba(79, 70, 229, 0.22), transparent 55%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 6px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .card-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .tag {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .chip {
+      font-size: 0.7rem;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(75, 85, 99, 0.8);
+      color: #cbd5f5;
+    }
+
+    .chip.good {
+      border-color: var(--accent-strong);
+      color: #bbf7d0;
+      background: rgba(22, 163, 74, 0.16);
+    }
+
+    .chip.med {
+      border-color: var(--warning);
+      color: #fed7aa;
+      background: rgba(248, 171, 79, 0.12);
+    }
+
+    .chip.note {
+      border-color: rgba(148, 163, 184, 0.7);
+      color: #e5e7eb;
+    }
+
+    .progress-wrap {
+      margin-top: 6px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .progress-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .progress-bar {
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(30, 64, 175, 0.4);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #22c55e, #4ade80);
+      width: 0;
+      transition: width 0.7s ease-out;
+    }
+
+    .timeline {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* TABLE */
+    .matrix-card {
+      margin-top: 6px;
+      padding-top: 8px;
+    }
+
+    .matrix-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .matrix-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .matrix-note {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .matrix-table-wrapper {
+      overflow-x: auto;
+      border-radius: 14px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      background: radial-gradient(circle at top left, rgba(30, 64, 175, 0.45), #020617);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.76rem;
+      min-width: 700px;
+    }
+
+    thead {
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    th, td {
+      padding: 7px 8px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.85);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    th {
+      font-weight: 600;
+      font-size: 0.75rem;
+      color: #e5e7eb;
+    }
+
+    tbody tr:nth-child(even) {
+      background: rgba(15, 23, 42, 0.7);
+    }
+
+    tbody tr:nth-child(odd) {
+      background: rgba(15, 23, 42, 0.3);
+    }
+
+    .score-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 6px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+    }
+
+    .score-pill.high {
+      border-color: var(--accent-strong);
+      color: #bbf7d0;
+    }
+
+    .score-pill.med {
+      border-color: var(--warning);
+      color: #fed7aa;
+    }
+
+    .score-pill.low {
+      border-color: #f97373;
+      color: #fecaca;
+    }
+
+    .footer-note {
+      margin-top: 6px;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    /* MODULE SNAPSHOT */
+    .modules-card {
+      margin-top: 8px;
+    }
+
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .modules-col h4 {
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+
+    .modules-col span {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .modules-col ul {
+      margin-top: 4px;
+      padding-left: 16px;
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .modules-col li {
+      margin-bottom: 2px;
+    }
+
+    @media (max-width: 720px) {
+      #dashboard {
+        padding: 16px 12px 18px;
+      }
+
+      .dash-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .user-chip {
+        align-self: flex-end;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen" class="fade-in">
+    <div class="pill">
+      🔒 Private dashboard
+      <span style="opacity:0.8;">– MSc decision brain</span>
+    </div>
+    <div class="login-title">
+      Aswin's Future Matrix
+    </div>
+    <div class="login-subtitle">
+      Compare TH&nbsp;Köln, RPTU, TU&nbsp;Dresden, and Uni&nbsp;Hildesheim for
+      <strong>BA / BI → Strategy</strong> career.
+    </div>
+
+    <form id="login-form">
+      <label for="username">Username</label>
+      <input id="username" type="text" autocomplete="off" />
+
+      <label for="password">Password</label>
+      <input id="password" type="password" autocomplete="off" />
+
+      <button type="submit" class="btn">
+        Enter dashboard 🚀
+      </button>
+
+      <div id="login-error" class="login-error"></div>
+      <div class="login-note">
+        Tip: Change the hard-coded username &amp; password in the source before
+        sharing this GitHub Pages link with anyone.
+      </div>
+    </form>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard">
+    <header class="dash-header">
+      <div class="dash-title">
+        MSc Decision Dashboard
+        <span>Goal: BA / BI → Strategy &amp; Digital Transformation</span>
+      </div>
+      <div class="user-chip">
+        <span class="user-dot"></span>
+        Logged in as <strong>Aswin</strong>
+      </div>
+    </header>
+
+    <!-- SUMMARY CARDS -->
+    <section class="summary-grid">
+      <!-- TH Köln -->
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">TH Köln – Digital Sciences (BIS)</div>
+            <div class="card-sub">
+              Cologne (NRW) · Applied business + tech · Best fit for BA/BI → Strategy
+            </div>
+          </div>
+          <span class="tag">🥇 Top choice for your goals</span>
+        </div>
+        <div class="chip-row">
+          <span class="chip good">Job market: Cologne / Düsseldorf / Bonn 🔥</span>
+          <span class="chip good">Profile match (BA/BI → Strategy): 9.6 / 10</span>
+          <span class="chip note">Type: University of Applied Sciences, very industry-focused</span>
+        </div>
+        <div class="chip-row">
+          <span class="chip good">Admission outlook: High (≈ 85–90%)</span>
+          <span class="chip note">Uni-assist: application forwarded to TH&nbsp;Köln</span>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>Chance of admission (rough estimate)</span>
+            <span>≈ 9 / 10</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" data-fill="90"></div>
+          </div>
+        </div>
+        <div class="timeline">
+          ⏱ Expected offer window: <strong>10 Dec 2025 – 5 Jan 2026</strong>
+          (after uni-assist forwarding &amp; internal evaluation).
+        </div>
+      </article>
+
+      <!-- RPTU -->
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">
+              RPTU – MSc Computer Science (DS + IS track)
+            </div>
+            <div class="card-sub">
+              Kaiserslautern · Research-oriented CS with Data Science + IS focus
+            </div>
+          </div>
+          <span class="tag">🧠 Deep CS + Data</span>
+        </div>
+        <div class="chip-row">
+          <span class="chip good">Tech / Data roles: Excellent</span>
+          <span class="chip med">BA / Strategy exposure: Medium</span>
+        </div>
+        <div class="chip-row">
+          <span class="chip med">Admission outlook: 60–65%</span>
+          <span class="chip note">Applied: 17 Oct 2025 · Deadline: 31 Oct</span>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>Chance of admission (rough estimate)</span>
+            <span>≈ 6 / 10</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" data-fill="60"></div>
+          </div>
+        </div>
+        <div class="timeline">
+          ⏱ Expected result window:
+          <strong>Mid-Dec 2025 – Early Feb 2026</strong>.
+        </div>
+      </article>
+
+      <!-- TU Dresden -->
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">
+              TU Dresden – MSc Computer Science
+            </div>
+            <div class="card-sub">
+              Dresden · Big TU, strong research · Great for AI / Data / Dev
+            </div>
+          </div>
+          <span class="tag">🏛 TU-level reputation</span>
+        </div>
+        <div class="chip-row">
+          <span class="chip good">Brand &amp; research: Very strong</span>
+          <span class="chip med">BA / Strategy path: Needs extra business effort</span>
+        </div>
+        <div class="chip-row">
+          <span class="chip med">Admission outlook: 45–55%</span>
+          <span class="chip note">Uni-assist: fee paid · app received (8 Nov 2025)</span>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>Chance of admission (rough estimate)</span>
+            <span>≈ 5 / 10</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" data-fill="50"></div>
+          </div>
+        </div>
+        <div class="timeline">
+          ⏱ Expected result window:
+          <strong>Late Jan – March 2026</strong>.
+        </div>
+      </article>
+
+      <!-- Uni Hildesheim -->
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">
+              Uni Hildesheim – Int. Master in Data Analytics
+            </div>
+            <div class="card-sub">
+              Hildesheim (near Hannover) · Focused Data / ML + BI
+            </div>
+          </div>
+          <span class="tag">📊 Pure Data / ML</span>
+        </div>
+        <div class="chip-row">
+          <span class="chip good">Perfect for Data / BI track</span>
+          <span class="chip good">Good bridge to Strategy via analytics</span>
+        </div>
+        <div class="chip-row">
+          <span class="chip good">Admission outlook: 65–75%</span>
+          <span class="chip note">Applied: 17 Nov 2025 · Non-EU deadline: 15 Dec</span>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>Chance of admission (rough estimate)</span>
+            <span>≈ 7 / 10</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" data-fill="70"></div>
+          </div>
+        </div>
+        <div class="timeline">
+          ⏱ Expected result window:
+          <strong>Late Dec 2025 – Feb 2026</strong>.
+        </div>
+      </article>
+    </section>
+
+    <!-- DECISION MATRIX -->
+    <section class="card matrix-card">
+      <div class="matrix-header-row">
+        <div class="matrix-title">Decision Matrix – 1 (Weak) to 10 (Excellent)</div>
+        <div class="matrix-note">
+          Scores are tailored to <strong>your profile &amp; BA/BI → Strategy</strong> goal,
+          not generic rankings.
+        </div>
+      </div>
+
+      <div class="matrix-table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>TH Köln – Digital Sciences (BIS)</th>
+              <th>RPTU – CS (DS + IS)</th>
+              <th>TU Dresden – CS</th>
+              <th>Uni Hildesheim – Data Analytics</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>City &amp; job market strength</td>
+              <td><span class="score-pill high">10 / 10</span></td>
+              <td><span class="score-pill med">7 / 10</span></td>
+              <td><span class="score-pill high">8 / 10</span></td>
+              <td><span class="score-pill high">8 / 10</span></td>
+            </tr>
+            <tr>
+              <td>Business Analyst roles nearby</td>
+              <td><span class="score-pill high">10 / 10</span></td>
+              <td><span class="score-pill high">8 / 10</span></td>
+              <td><span class="score-pill high">8 / 10</span></td>
+              <td><span class="score-pill high">8 / 10</span></td>
+            </tr>
+            <tr>
+              <td>BI / Data Analyst roles</td>
+              <td><span class="score-pill high">9 / 10</span></td>
+              <td><span class="score-pill high">9 / 10</span></td>
+              <td><span class="score-pill high">9 / 10</span></td>
+              <td><span class="score-pill high">8 / 10</span></td>
+            </tr>
+            <tr>
+              <td>Strategy / Digital Transformation jobs</td>
+              <td><span class="score-pill high">9 / 10</span></td>
+              <td><span class="score-pill med">7 / 10</span></td>
+              <td><span class="score-pill high">8 / 10</span></td>
+              <td><span class="score-pill high">8 / 10</span></td>
+            </tr>
+            <tr>
+              <td>Tech / Developer &amp; Data roles</td>
+              <td><span class="score-pill med">7 / 10</span></td>
+              <td><span class="score-pill high">10 / 10</span></td>
+              <td><span class="score-pill high">10 / 10</span></td>
+              <td><span class="score-pill high">8 / 10</span></td>
+            </tr>
+            <tr>
+              <td>Ease of Werkstudent / part-time work</td>
+              <td><span class="score-pill high">10 / 10</span></td>
+              <td><span class="score-pill med">6 / 10</span></td>
+              <td><span class="score-pill high">8 / 10</span></td>
+              <td><span class="score-pill med">7 / 10</span></td>
+            </tr>
+            <tr>
+              <td>Difficulty vs your profile (higher = more comfortable)</td>
+              <td><span class="score-pill high">9 / 10</span></td>
+              <td><span class="score-pill med">7 / 10</span></td>
+              <td><span class="score-pill med">7 / 10</span></td>
+              <td><span class="score-pill high">8 / 10</span></td>
+            </tr>
+            <tr>
+              <td>Course alignment with BA/BI → Strategy</td>
+              <td><span class="score-pill high">10 / 10</span></td>
+              <td><span class="score-pill high">9 / 10</span></td>
+              <td><span class="score-pill med">8 / 10</span></td>
+              <td><span class="score-pill high">9 / 10</span></td>
+            </tr>
+            <tr>
+              <td>Industry connections &amp; applied projects</td>
+              <td><span class="score-pill high">9 / 10</span></td>
+              <td><span class="score-pill med">8 / 10</span></td>
+              <td><span class="score-pill high">9 / 10</span></td>
+              <td><span class="score-pill med">7 / 10</span></td>
+            </tr>
+            <tr>
+              <td>Research strength</td>
+              <td><span class="score-pill med">7 / 10</span></td>
+              <td><span class="score-pill high">10 / 10</span></td>
+              <td><span class="score-pill high">10 / 10</span></td>
+              <td><span class="score-pill high">9 / 10</span></td>
+            </tr>
+            <tr>
+              <td>Living cost (higher = cheaper for you)</td>
+              <td><span class="score-pill med">6 / 10</span></td>
+              <td><span class="score-pill high">9 / 10</span></td>
+              <td><span class="score-pill med">7 / 10</span></td>
+              <td><span class="score-pill high">8 / 10</span></td>
+            </tr>
+            <tr>
+              <td>Indian student community / support</td>
+              <td><span class="score-pill high">10 / 10</span></td>
+              <td><span class="score-pill med">7 / 10</span></td>
+              <td><span class="score-pill high">9 / 10</span></td>
+              <td><span class="score-pill med">7 / 10</span></td>
+            </tr>
+            <tr>
+              <td>PR / Blue-Card path (similar across)</td>
+              <td><span class="score-pill high">9 / 10</span></td>
+              <td><span class="score-pill high">9 / 10</span></td>
+              <td><span class="score-pill high">9 / 10</span></td>
+              <td><span class="score-pill high">9 / 10</span></td>
+            </tr>
+            <tr>
+              <td>City life, climate, &amp; your personality fit</td>
+              <td><span class="score-pill high">9 / 10</span></td>
+              <td><span class="score-pill med">6 / 10</span></td>
+              <td><span class="score-pill high">8 / 10</span></td>
+              <td><span class="score-pill med">7 / 10</span></td>
+            </tr>
+            <tr>
+              <td>Flexibility to shift into Strategy / Consulting</td>
+              <td><span class="score-pill high">10 / 10</span></td>
+              <td><span class="score-pill med">7 / 10</span></td>
+              <td><span class="score-pill high">9 / 10</span></td>
+              <td><span class="score-pill high">8 / 10</span></td>
+            </tr>
+            <tr>
+              <td>Long-term career growth (Business + Tech)</td>
+              <td><span class="score-pill high">10 / 10</span></td>
+              <td><span class="score-pill high">9 / 10</span></td>
+              <td><span class="score-pill high">9 / 10</span></td>
+              <td><span class="score-pill high">9 / 10</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="footer-note">
+        ⚠️ All scores &amp; chances are estimates based on your CGPA, background,
+        and public info (admission deadlines, uni type, city job market). They
+        are not official guarantees.
+      </div>
+    </section>
+
+    <!-- MODULE SNAPSHOT -->
+    <section class="card modules-card">
+      <div class="matrix-header-row">
+        <div class="matrix-title">Modules Snapshot – What You’ll Likely Study</div>
+        <div class="matrix-note">
+          Typical modules based on current handbooks. Exact choices can change each year.
+        </div>
+      </div>
+
+      <div class="modules-grid">
+        <div class="modules-col">
+          <h4>TH Köln – Digital Sciences (BIS)</h4>
+          <span>Business + IT + Data for BA/BI → Strategy</span>
+          <ul>
+            <li>Digital Transformation &amp; IT Strategy</li>
+            <li>Business Information Systems &amp; Enterprise Architectures</li>
+            <li>Data Management, Governance &amp; Quality</li>
+            <li>Process Modelling &amp; Automation (BPM / BPMN)</li>
+            <li>Business Intelligence &amp; Data Warehousing</li>
+            <li>IT Project Management / Agile Methods</li>
+            <li>Security, Compliance &amp; Data Protection</li>
+          </ul>
+        </div>
+
+        <div class="modules-col">
+          <h4>RPTU – CS (Data Science + IS)</h4>
+          <span>Deep CS + Data + Information Systems</span>
+          <ul>
+            <li>Advanced Algorithms &amp; Data Structures</li>
+            <li>Software Engineering &amp; Distributed Systems</li>
+            <li>Databases &amp; Information Systems</li>
+            <li>Machine Learning / Data Mining</li>
+            <li>Big Data Analytics &amp; Scientific Programming</li>
+            <li>Business Process Management / Process Mining</li>
+            <li>ERP / Business Information Systems, IT Strategy</li>
+          </ul>
+        </div>
+
+        <div class="modules-col">
+          <h4>TU Dresden – MSc Computer Science</h4>
+          <span>Strong research CS with AI / Data options</span>
+          <ul>
+            <li>Advanced Algorithms &amp; Complexity Theory</li>
+            <li>Software Engineering &amp; Software Quality</li>
+            <li>Distributed &amp; Networked Systems / Cloud</li>
+            <li>Artificial Intelligence &amp; Machine Learning</li>
+            <li>Data Management &amp; Information Systems</li>
+            <li>Embedded / Real-time / Systems Engineering</li>
+            <li>Graphics, Visualization or HCI (electives)</li>
+          </ul>
+        </div>
+
+        <div class="modules-col">
+          <h4>Uni Hildesheim – Data Analytics</h4>
+          <span>Focused ML / Big Data + BI / PM electives</span>
+          <ul>
+            <li>Machine Learning &amp; Advanced ML</li>
+            <li>Big Data Analytics</li>
+            <li>Modern Optimization Techniques</li>
+            <li>Lab Course: Distributed Data Analytics</li>
+            <li>Business Intelligence &amp; Data Warehousing</li>
+            <li>Project Management &amp; Scheduling</li>
+            <li>Requirements Engineering, Data Visualization, NLP</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // --------- SIMPLE LOGIN (FRONT-END ONLY, NOT SECURE) ----------
+    const LOGIN_USER = "aswin";       // ⬅ change if you want
+    const LOGIN_PASS = "future2026";  // ⬅ change if you want
+
+    const loginForm = document.getElementById("login-form");
+    const loginError = document.getElementById("login-error");
+    const loginScreen = document.getElementById("login-screen");
+    const dashboard = document.getElementById("dashboard");
+
+    loginForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const u = document.getElementById("username").value.trim();
+      const p = document.getElementById("password").value.trim();
+
+      if (u === LOGIN_USER && p === LOGIN_PASS) {
+        loginError.textContent = "";
+        loginScreen.style.display = "none";
+        dashboard.style.display = "flex";
+        animateProgressBars();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        loginError.textContent = "Wrong username or password, machan. Try again.";
+      }
+    });
+
+    // --------- PROGRESS BAR ANIMATION ----------
+    function animateProgressBars() {
+      const fills = document.querySelectorAll(".progress-fill");
+      fills.forEach((bar) => {
+        const target = bar.getAttribute("data-fill");
+        bar.style.width = target + "%";
+      });
+    }
+  </script>
+</body>
+</html>
